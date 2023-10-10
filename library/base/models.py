@@ -34,7 +34,6 @@ class myAccountManager(BaseUserManager):
             email=self.normalize_email(email),
             username=username,
             phone_number=phone_number,
-            is_active=True,
         )
 
         user.set_password(password)
@@ -60,7 +59,7 @@ class myAccountManager(BaseUserManager):
 class MyUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=100, unique=True)
-    phone_number = models.CharField(max_length=100, unique=True)
+    phone_number = models.CharField(max_length=100)
     address = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

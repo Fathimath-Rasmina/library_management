@@ -12,6 +12,7 @@ from rest_framework import viewsets
 from ..models import MyUser
 from rest_framework.permissions import IsAuthenticated
 from ..permissions import IsLibrarianOrReadOnly
+from rest_framework import generics
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -69,7 +70,15 @@ class LoginAPIView(APIView):
         )
 
 
-class MemberManagement(viewsets.ModelViewSet):
+# view for member creation and view member list
+class MemberListCreateView(generics.ListCreateAPIView):
+    queryset = MyUser.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsLibrarianOrReadOnly]
+
+
+# view for member CRUD operations
+class MemberRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MyUser.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsLibrarianOrReadOnly]
