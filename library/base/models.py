@@ -89,3 +89,33 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, add_label):
         return True
+
+
+class Books(models.Model):
+    Title = models.CharField(max_length=200)
+    author = models.CharField(max_length=50)
+    count = models.PositiveIntegerField(default=0)
+    rent_count = models.PositiveIntegerField(default=0)
+    is_available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
+
+
+class BookRequests(models.Model):
+    REQUEST_STATUS_CHOICES = (
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("declined", "Declined"),
+    )
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name="requests")
+    requested_by = models.ForeignKey(
+        MyUser, on_delete=models.CASCADE, related_name="requested_books"
+    )
+    requested_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=10, choices=REQUEST_STATUS_CHOICES, default="pending"
+    )
+
+    def __str__(self):
+        return f"Request for {self.book.title} by {self.requested_by.username}"

@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import MyUser
+from .models import MyUser, Books, BookRequests
 from django.core.validators import EmailValidator
 from rest_framework.validators import UniqueValidator
 
@@ -44,32 +44,16 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 
-# def save(self):
-#     user = MyUser(
-#         email=self.validated_data["email"],
-#         username=self.validated_data["username"],
-#     )
-#     password = self.validated_data["password"]
-#     user.set_password(password)
-#     user.save()
-#     return user
-
-# class LibrarianSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Librarian
-#         fields = "__all__"
+class BooksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Books
+        fields = "__all__"
 
 
-# class MemberSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = "__all__"
-
-
-# class BookSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = Book
-#         fields = "__all__"
+class BookRequestsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookRequests
+        fields = "__all__"
 
 
 # class RentedBookSerializers(serializers.ModelSerializer):
