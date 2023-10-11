@@ -1,27 +1,16 @@
 # models.py
 from django.db import models
 from django.contrib.auth.models import User
-import uuid
 from datetime import timedelta
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
-
-# Create your models here.
-
-
-from django.db import models
-from django.contrib.auth.models import User
 import uuid
 from datetime import timedelta
-
-
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
-from django.db import models
 from django.utils import timezone
 
 
@@ -91,6 +80,9 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return True
 
 
+# models.py
+
+
 class Books(models.Model):
     Title = models.CharField(max_length=200)
     author = models.CharField(max_length=50)
@@ -99,7 +91,7 @@ class Books(models.Model):
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.title
+        return self.Title
 
 
 class BookRequests(models.Model):
@@ -108,6 +100,7 @@ class BookRequests(models.Model):
         ("approved", "Approved"),
         ("declined", "Declined"),
     )
+    _id = models.AutoField(primary_key=True, editable=False)
     book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name="requests")
     requested_by = models.ForeignKey(
         MyUser, on_delete=models.CASCADE, related_name="requested_books"
@@ -118,4 +111,44 @@ class BookRequests(models.Model):
     )
 
     def __str__(self):
-        return f"Request for {self.book.title} by {self.requested_by.username}"
+        return f"Request for {self.book.Title} by {self.requested_by.username}"
+
+
+class RentedBooks(models.Model):
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    rented_by = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    rental_date = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField()
+    returned = models.BooleanField(default=False)
+    fine = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        # Set the due_date to be 7 days after the rental_date
+        self.due_date = self.rental_date + timedelta(days=7)
+        super(RentedBooks, self).save(*args, **kwargs)
+
+    def return_book(self):
+        if not self.returned:
+            self.returned = True
+
+            # Calculate the fine
+            today = timezone.now()
+            overdue_days = (today - self.due_date).days
+
+            if overdue_days > 0:
+                if overdue_days <= 7:
+                    fine = 5  # 5 rupees for the first 1 week
+                else:
+                    fine = (
+                        5 + (overdue_days - 7) * 10
+                    )  # 10 rupees for each day after 1 week
+
+            self.fine = fine
+
+            # Update the associated book status and rent count
+            book = self.book
+            book.is_available = True
+            book.rent_count -= 1
+
+            self.save()
+            book.save()

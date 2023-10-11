@@ -44,6 +44,9 @@ class LoginSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
 
 
+# serializers.py
+
+
 class BooksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
