@@ -1,10 +1,11 @@
 # serializers.py
 from rest_framework import serializers
-from .models import MyUser, Books, BookRequests
+from .models import MyUser, Books, BookRequests, RentedBooks
 from django.core.validators import EmailValidator
 from rest_framework.validators import UniqueValidator
 
 
+# serializers.py
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
@@ -59,7 +60,7 @@ class BookRequestsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# class RentedBookSerializers(serializers.ModelSerializer):
-#     class Meta:
-#         model = RentedBook
-#         fields = "__all__"
+class RentedBookSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = RentedBooks
+        fields = "__all__"

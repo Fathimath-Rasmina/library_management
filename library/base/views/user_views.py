@@ -70,6 +70,39 @@ class LoginAPIView(APIView):
         )
 
 
+# * user profile
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        user = MyUser.objects.get(pk=user_id)
+        if user == request.user:
+            data = user
+            serializer = UserSerializer(data)
+            return Response(serializer.data)
+        else:
+            return Response(
+                {"message": "Unauthorized"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def patch(self, request, user_id):
+        user = MyUser.objects.get(pk=user_id)
+        if user == request.user:
+            data = request.data
+            serializer = UserSerializer(user, data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                if "password" in data:
+                    user.set_password(data["password"])
+                    user.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(
+                {"message": "Unauthorized"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
 # view for member creation and view member list
 class MemberListCreateView(generics.ListCreateAPIView):
     queryset = MyUser.objects.all()

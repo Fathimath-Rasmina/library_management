@@ -7,6 +7,7 @@ from ..views.user_views import (
     MyTokenObtainPairView,
     MemberListCreateView,
     MemberRetrieveUpdateDeleteView,
+    UserProfileView,
 )
 
 # * JWT
@@ -18,6 +19,7 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("register/", RegistrationAPIView.as_view(), name="register"),
     path("login/", LoginAPIView.as_view(), name="login"),
+    path("user_profile/<int:user_id>/", UserProfileView.as_view(), name="user_profile"),
     path("manage_members/", MemberListCreateView.as_view(), name="manage_member"),
     #
     #

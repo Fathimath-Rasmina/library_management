@@ -4,15 +4,16 @@ from ..views.book_views import (
     BookRetrieveUpdateDeleteView,
     RequestToRentBookView,
     ManageBookRequestsView,
-    ListBookRequestsView,
+    ReturnBook,
+    ListRentedBooksView,
 )
 
 urlpatterns = [
     path("manage_books/", BookListCreateView.as_view(), name="manage_books"),
+    path("rented_books/", ListRentedBooksView.as_view(), name="rented_books"),
     path(
         "rent_request_list/", ManageBookRequestsView.as_view(), name="rent_request_list"
     ),
-    #
     path(
         "manage_books/<int:pk>/",
         BookRetrieveUpdateDeleteView.as_view(),
@@ -28,4 +29,5 @@ urlpatterns = [
         ManageBookRequestsView.as_view(),
         name="rent_request_handle",
     ),
+    path("return_book/<int:rented_book_id>/", ReturnBook.as_view(), name="return_book"),
 ]

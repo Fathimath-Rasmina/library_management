@@ -123,6 +123,9 @@ class RentedBooks(models.Model):
     fine = models.IntegerField(default=0)
 
     def save(self, *args, **kwargs):
+        if self.rental_date is None:
+            self.rental_date = timezone.now()
+
         # Set the due_date to be 7 days after the rental_date
         self.due_date = self.rental_date + timedelta(days=7)
         super(RentedBooks, self).save(*args, **kwargs)
@@ -143,6 +146,9 @@ class RentedBooks(models.Model):
                         5 + (overdue_days - 7) * 10
                     )  # 10 rupees for each day after 1 week
 
+            else:
+                fine = 0
+
             self.fine = fine
 
             # Update the associated book status and rent count
@@ -152,3 +158,5 @@ class RentedBooks(models.Model):
 
             self.save()
             book.save()
+
+            return fine
