@@ -187,6 +187,10 @@ class RentedBooks(models.Model):
             book.is_available = True
             book.rent_count -= 1
 
+            serial_number = self.serial_number
+            serial_number.is_assigned = False
+            serial_number.save()
+
             self.save()
             book.save()
 

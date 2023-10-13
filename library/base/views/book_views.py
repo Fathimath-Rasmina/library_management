@@ -121,7 +121,7 @@ class RequestToRentBookView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(
-                {"message": "This book is not available for rent"},
+                {"message": "This book is not available for rent right now"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -172,6 +172,11 @@ class ManageBookRequestsView(APIView):
                         # Increment the rent count
                         book_request.book.rent_count += 1
                         book_request.book.save()
+
+                        if book_request.book.rent_count == book_request.book.count:
+                            # All copies are rented, set the book as unavailable
+                            book_request.book.is_available = False
+                            book_request.book.save()
 
                         # Create a new RentedBooks instance with the assigned serial number
                         rented_book = RentedBooks.objects.create(
