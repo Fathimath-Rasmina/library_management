@@ -6,6 +6,7 @@ from ..views.book_views import (
     ManageBookRequestsView,
     ReturnBook,
     ListRentedBooksView,
+    ListSerialNumbersView,
 )
 
 urlpatterns = [
@@ -14,6 +15,7 @@ urlpatterns = [
     path(
         "rent_request_list/", ManageBookRequestsView.as_view(), name="rent_request_list"
     ),
+    path("serial_numbers/", ListSerialNumbersView.as_view(), name="serial_numbers"),
     path(
         "manage_books/<int:pk>/",
         BookRetrieveUpdateDeleteView.as_view(),

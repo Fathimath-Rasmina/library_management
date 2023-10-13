@@ -1,6 +1,6 @@
 # serializers.py
 from rest_framework import serializers
-from .models import MyUser, Books, BookRequests, RentedBooks
+from .models import MyUser, Books, BookRequests, RentedBooks, SerialNumbers
 from django.core.validators import EmailValidator
 from rest_framework.validators import UniqueValidator
 
@@ -46,8 +46,6 @@ class LoginSerializer(serializers.Serializer):
 
 
 # serializers.py
-
-
 class BooksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
@@ -63,4 +61,19 @@ class BookRequestsSerializer(serializers.ModelSerializer):
 class RentedBookSerializers(serializers.ModelSerializer):
     class Meta:
         model = RentedBooks
+        fields = "__all__"
+
+    def create(self, validated_data):
+        # Create the BookRequests instance
+        book_request = super().create(validated_data)
+
+        # Save the Books instance to ensure the SerialNumbers instances are created
+        book_request.book.save()
+
+        return book_request
+
+
+class SerialNumbersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SerialNumbers
         fields = "__all__"

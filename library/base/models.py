@@ -12,6 +12,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.utils import timezone
+import random
+import string
 
 
 class myAccountManager(BaseUserManager):
@@ -81,8 +83,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
 
 # models.py
-
-
 class Books(models.Model):
     Title = models.CharField(max_length=200)
     author = models.CharField(max_length=50)
@@ -92,6 +92,33 @@ class Books(models.Model):
 
     def __str__(self):
         return self.Title
+
+    def save(self, *args, **kwargs):
+        is_new = self.id is None  # Check if the book is being created
+
+        super(Books, self).save(
+            *args, **kwargs
+        )  # Call save to create the book instance
+
+        if is_new:
+            for _ in range(self.count):
+                serial_number = "".join(
+                    random.choice(string.ascii_uppercase + string.digits)
+                    for _ in range(10)
+                )
+                SerialNumbers.objects.create(book=self, serial_number=serial_number)
+
+
+class SerialNumbers(models.Model):
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    serial_number = models.CharField(max_length=10, unique=True)
+    is_assigned = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("book", "serial_number")
+
+    def __str__(self):
+        return f" {self.book.Title} by {self.book.author}"
 
 
 class BookRequests(models.Model):
@@ -116,11 +143,15 @@ class BookRequests(models.Model):
 
 class RentedBooks(models.Model):
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    serial_number = models.ForeignKey(SerialNumbers, on_delete=models.CASCADE)
     rented_by = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     rental_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     returned = models.BooleanField(default=False)
     fine = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.book.Title} by {self.book.author}, Rented by {self.rented_by.username}"
 
     def save(self, *args, **kwargs):
         if self.rental_date is None:
