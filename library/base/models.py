@@ -1,10 +1,8 @@
 # models.py
 from django.db import models
-from django.contrib.auth.models import User
 from datetime import timedelta
 from django.db import models
 from django.utils import timezone
-import uuid
 from datetime import timedelta
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -38,7 +36,7 @@ class myAccountManager(BaseUserManager):
             username=username,
             phone_number=phone_number,
         )
-        user.is_librarian = True  # added
+        user.is_librarian = True
         user.is_admin = True
         user.is_active = True
         user.is_staff = True
@@ -54,8 +52,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     address = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # required
     is_active = models.BooleanField(default=True)
     is_librarian = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)

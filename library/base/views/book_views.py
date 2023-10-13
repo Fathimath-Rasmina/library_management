@@ -1,9 +1,7 @@
 # views.py
-from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
 from ..serializers import (
     BooksSerializer,
     BookRequestsSerializer,
@@ -11,7 +9,6 @@ from ..serializers import (
     SerialNumbersSerializer,
 )
 
-from rest_framework import viewsets
 from ..models import Books, BookRequests, RentedBooks, SerialNumbers
 from rest_framework.permissions import IsAuthenticated
 from ..permissions import IsLibrarianOrReadOnly
@@ -23,7 +20,7 @@ import random
 import string
 
 
-# * view for book creation and view member list
+# * view for book creation and view book list
 class BookListCreateView(generics.ListCreateAPIView):
     queryset = Books.objects.all()
     serializer_class = BooksSerializer
@@ -75,7 +72,7 @@ class ListRentedBooksView(generics.ListAPIView):
     permission_classes = [IsAuthenticated, IsLibrarianOrReadOnly]
 
 
-# * request to rent a book , views.py
+# * request to rent a book from member
 class RequestToRentBookView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -126,7 +123,7 @@ class RequestToRentBookView(APIView):
             )
 
 
-# * Rent a book request handling
+# * Rent a book request handling from lirarian's side
 class ManageBookRequestsView(APIView):
     permission_classes = [IsAuthenticated, IsLibrarianOrReadOnly]
 
@@ -214,7 +211,7 @@ class ManageBookRequestsView(APIView):
             )
 
 
-# view for returning the book
+# * view for returning the book
 class ReturnBook(APIView):
     permission_classes = [IsAuthenticated]
 

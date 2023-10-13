@@ -31,6 +31,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
+# * member Registration
 class RegistrationAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -44,6 +45,7 @@ class RegistrationAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# * login for member and librarian
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -70,7 +72,7 @@ class LoginAPIView(APIView):
         )
 
 
-# * user profile
+# * user(member) profile
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
