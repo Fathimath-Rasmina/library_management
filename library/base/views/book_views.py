@@ -127,8 +127,8 @@ class RequestToRentBookView(APIView):
 class ManageBookRequestsView(APIView):
     permission_classes = [IsAuthenticated, IsLibrarianOrReadOnly]
 
+    # Retrieve a list of all rent requests
     def get(self, request):
-        # Retrieve a list of all rent requests
         rent_requests = BookRequests.objects.all()
         serializer = BookRequestsSerializer(rent_requests, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -161,7 +161,7 @@ class ManageBookRequestsView(APIView):
                     )
 
                     if available_serial_numbers.exists():
-                        # Assign the first available serial number to the user
+                        # Assign the first available serial number to the member
                         serial_number = available_serial_numbers.first()
                         serial_number.is_assigned = True
                         serial_number.save()
@@ -170,8 +170,8 @@ class ManageBookRequestsView(APIView):
                         book_request.book.rent_count += 1
                         book_request.book.save()
 
+                        # check if all books are rented
                         if book_request.book.rent_count == book_request.book.count:
-                            # All copies are rented, set the book as unavailable
                             book_request.book.is_available = False
                             book_request.book.save()
 

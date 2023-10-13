@@ -78,7 +78,6 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
         return True
 
 
-# models.py
 class Books(models.Model):
     Title = models.CharField(max_length=200)
     author = models.CharField(max_length=50)
@@ -92,9 +91,7 @@ class Books(models.Model):
     def save(self, *args, **kwargs):
         is_new = self.id is None  # Check if the book is being created
 
-        super(Books, self).save(
-            *args, **kwargs
-        )  # Call save to create the book instance
+        super(Books, self).save(*args, **kwargs)
 
         if is_new:
             for _ in range(self.count):
@@ -161,7 +158,7 @@ class RentedBooks(models.Model):
         if not self.returned:
             self.returned = True
 
-            # Calculate the fine
+            # Calculate the fines
             today = timezone.now()
             overdue_days = (today - self.due_date).days
 
